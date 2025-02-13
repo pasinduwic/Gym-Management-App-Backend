@@ -9,6 +9,7 @@ import clientRouter from "./routers/client-router.js";
 import paymentRouter from "./routers/payment-router.js";
 import coachRouter from "./routers/coach-router.js";
 import verifyJWT from "./middleware/verifyJWT.js";
+import "./utils/smsScheduler.js";
 
 const app = express();
 
