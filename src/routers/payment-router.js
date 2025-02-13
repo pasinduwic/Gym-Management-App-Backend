@@ -1,6 +1,7 @@
 import express from "express";
 import Payment from "../models/payments.js";
 import Client from "../models/client.js";
+import axios from "axios";
 
 const router = express.Router();
 
@@ -21,6 +22,22 @@ router.post("/api/payment", async (req, res) => {
     // console.log(client);
     await client.save();
     await newPayment.save();
+
+    // After payment is saved, send SMS using the Notify.lk API
+    const smsUrl = `https://app.notify.lk/api/v1/send?user_id=290810&api_key=5NQPpqHnWGUmjtKjBecH&sender_id=NotifyDEMO&to=${client.phoneNumber}&message=Your payment of ${newPayment.amount} has been successfully processed.You will receive a reminder one day before membership expires.%0AThank you!`;
+
+    console.log(smsUrl);
+    try {
+      const smsResponse = await axios.get(smsUrl); // Make the API call to Notify.lk
+      if (smsResponse.data.status === "success") {
+        console.log("SMS sent successfully!");
+      } else {
+        console.log("Failed to send SMS:", smsResponse.data);
+      }
+    } catch (smsError) {
+      console.error("Error sending SMS:", smsError.message);
+    }
+
     res.send(newPayment);
   } catch (e) {
     res.send({ error: e });
